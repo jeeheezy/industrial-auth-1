@@ -10,11 +10,14 @@
       <p><%= comment.body %></p>
     </div>
     <div>
-      <% if current_user == comment.author %>
+      <%# if current_user == comment.author %>
+      <% if policy(comment).edit? %>
         <%= link_to edit_comment_path(comment), class: "btn btn-link btn-sm text-muted" do %>
           <i class="fas fa-edit fa-fw"></i>
         <% end %>
+      <% end %>
 
+      <% if policy(comment).destroy? %>
         <%= link_to comment, data: { turbo_method: :delete }, class: "btn btn-link btn-sm text-muted" do %>
           <i class="fas fa-trash fa-fw"></i>
         <% end %>
