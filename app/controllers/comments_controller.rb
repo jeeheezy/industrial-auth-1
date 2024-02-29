@@ -3,6 +3,10 @@ class CommentsController < ApplicationController
   # before_action :ensure_current_user_is_owner, only: [:destroy, :update, :edit]
   # before_action :is_an_authorized_user, only: [:create]
   before_action(except: [:new, :create]) { authorize(@comment || Comment) }
+  # have to add in skip_after for verify_authorized since I"m not using authorize helper and instead using what helper does manually
+  # pundit is dumb
+  skip_after_action :verify_authorized, only: :create 
+  
 
   # GET /comments or /comments.json
   def index
