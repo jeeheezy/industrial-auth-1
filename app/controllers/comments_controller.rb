@@ -1,7 +1,12 @@
 class CommentsController < ApplicationController
   before_action :set_comment, only: %i[ show edit update destroy ]
-  before_action :ensure_current_user_is_owner, only: [:destroy, :update, :edit]
-  before_action :is_an_authorized_user, only: [:create]
+  # before_action :ensure_current_user_is_owner, only: [:destroy, :update, :edit]
+  # before_action :is_an_authorized_user, only: [:create]
+  before_action(except: [:new, :create]) { authorize(@comment || Comment) }
+  # have to add in skip_after for verify_authorized since I"m not using authorize helper and instead using what helper does manually
+  # pundit is dumb
+  skip_after_action :verify_authorized, only: :create 
+  
 
   # GET /comments or /comments.json
   def index
@@ -23,6 +28,13 @@ class CommentsController < ApplicationController
 
   # POST /comments or /comments.json
   def create
+    @photo = Photo.find(params.fetch(:comment).fetch(:photo_id))
+    unless CommentPolicy.new(current_user, @photo).create?
+      raise Pundit::NotAuthorizedError, "not allowed to create? this #{@photo.inspect}"
+    end
+    # alternatively what Thierry tried, where you keep consistent what you pass in and use the authorize helper:
+    # @photo = ...
+    # authorize @photo, :user_can_comment
     @comment = Comment.new(comment_params)
     @comment.author = current_user
 
@@ -71,16 +83,18 @@ class CommentsController < ApplicationController
     end
 
     # Only allow author of comments to edit/delete comments
-    def ensure_current_user_is_author
-      if current_user != @comment.author
-        redirect_back fallback_location: root_url, alert: "You're not authorize for that."
-      end
-    end
+
+    # def ensure_current_user_is_author
+    #   if current_user != @comment.author
+    #     redirect_back fallback_location: root_url, alert: "You're not authorize for that."
+    #   end
+    # end
     
-    def is_an_authorized_user
-      @photo = Photo.find(params.fetch(:comment).fetch(:photo_id))
-      if current_user != @photo.owner && @photo.owner.private? && !current_user.leaders.include?(@photo.owner)
-        redirect_back fallback_location: root_url, alert: "Not authorized"
-      end
-    end
+    # def is_an_authorized_user
+    #   @photo = Photo.find(params.fetch(:comment).fetch(:photo_id))
+    #   if current_user != @photo.owner && @photo.owner.private? && !current_user.leaders.include?(@photo.owner)
+    #     redirect_back fallback_location: root_url, alert: "Not authorized"
+    #   end
+    # end
+
 end
