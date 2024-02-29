@@ -3,6 +3,7 @@ class PhotosController < ApplicationController
   # before_action :ensure_current_user_is_owner, only: [:destroy, :update, :edit]
   before_action { authorize(@photo || Photo) }
 
+
   # GET /photos or /photos.json
   def index
     @photos = Photo.all

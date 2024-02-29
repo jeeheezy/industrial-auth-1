@@ -79,6 +79,7 @@ class CommentsController < ApplicationController
     end
 
     # Only allow author of comments to edit/delete comments
+
     # def ensure_current_user_is_author
     #   if current_user != @comment.author
     #     redirect_back fallback_location: root_url, alert: "You're not authorize for that."
@@ -91,4 +92,5 @@ class CommentsController < ApplicationController
     #     redirect_back fallback_location: root_url, alert: "Not authorized"
     #   end
     # end
+
 end

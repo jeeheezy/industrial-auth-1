@@ -14,6 +14,7 @@
         <% end %>
       <% end %>
       <% if policy(photo).destroy? %>
+
         <%= link_to photo, data: { turbo_method: :delete }, class: "btn btn-link btn-sm text-muted" do %>
           <i class="fas fa-trash fa-fw"></i>
         <% end %>
