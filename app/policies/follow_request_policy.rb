@@ -21,6 +21,6 @@ class FollowRequestPolicy < ApplicationPolicy
 
   def destroy?
   # should only be able to destroy if you're the sender
-    user == record.sender
+    (user == record.sender) || (user == record.recipient)
   end
 end
